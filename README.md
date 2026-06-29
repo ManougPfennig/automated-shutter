@@ -30,8 +30,8 @@ the slowest direction, so it always finishes the travel.
 
 | Relay      | Raspberry Pi GPIO (default) | Replaces              |
 |------------|-----------------------------|-----------------------|
-| UP relay   | GPIO 2 (5V)                 | "up" switch contact   |
-| DOWN relay | GPIO 4 (5V)                 | "down" switch contact |
+| UP relay   | GPIO 2 (5V pin)             | "up" switch contact   |
+| DOWN relay | GPIO 4 (5V pin)             | "down" switch contact |
 
 Change `up_pin` / `down_pin` in `config.json` if you wire them to different
 GPIOs. I personnally used solid state relay modules rated for my house's and
