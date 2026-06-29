@@ -64,6 +64,8 @@ def api_settings():
         return jsonify({"error": "times must be in HH:MM format"}), 400
 
     new_cfg = config.update_times(open_time, close_time)
+    scheduler._last_open_date = None
+    scheduler._last_close_date = None
     logger.info("Schedule updated: open=%s close=%s", open_time, close_time)
     return jsonify({"open_time": new_cfg["open_time"], "close_time": new_cfg["close_time"]})
 
