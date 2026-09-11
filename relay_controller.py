@@ -26,6 +26,7 @@ logger = logging.getLogger("relay_controller")
 
 try:
     from gpiozero import OutputDevice
+    from gpiozero import Button
     GPIO_AVAILABLE = True
 except Exception as exc:  # pragma: no cover - depends on host hardware
     logger.warning("gpiozero not available, using simulated relays: %s", exc)
@@ -50,6 +51,24 @@ class _SimulatedRelay:
     def close(self):
         pass
 
+class _SimulatedButton:
+    """Stand-in for gpiozero.Button when no GPIO hardware is present."""
+
+    def __init__(self, pin, **kwargs):
+        self.pin = pin
+        self._pressed = False
+
+    def pressed(self):
+        self._pressed = True
+        logger.info("[SIMULATED] button pin %s -> PRESSED", self.pin)
+
+    def released(self):
+        self._pressed = False
+        logger.info("[SIMULATED] button pin %s -> RELEASED", self.pin)
+
+    def close(self):
+        pass
+
 
 def _make_relay(pin):
     if GPIO_AVAILABLE:
@@ -59,12 +78,27 @@ def _make_relay(pin):
             logger.warning("Falling back to simulated relay for pin %s: %s", pin, exc)
     return _SimulatedRelay(pin)
 
+def _make_button(pin):
+    if GPIO_AVAILABLE:
+        try:
+            return Button(pin)
+        except Exception as exc:  # pragma: no cover
+            logger.warning("Falling back to simulated button for pin %s: %s", pin, exc)
+    return _SimulatedButton(pin)
+
 
 class ShutterController:
-    def __init__(self, up_pin, down_pin, travel_seconds=15.0):
+    def __init__(self, up_pin, down_pin, button_up_pin, button_down_pin, travel_seconds=15.0):
         self.relay_up = _make_relay(up_pin)
+        self.relay_up.on() # Never start in an energised state, regardless of prior run.
         self.relay_down = _make_relay(down_pin)
+        self.relay_down.on() # Same here.
+
+        self.button_up = _make_button(button_up_pin)
+        self.button_down = _make_button(button_down_pin)
         self.travel_seconds = float(travel_seconds)
+
+        print("up_pin:", up_pin, "down_pin:", down_pin, "button_up_pin:", button_up_pin, "button_down_pin:", button_down_pin)
 
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
@@ -74,12 +108,20 @@ class ShutterController:
         self.last_action = None         # open | close | stop
         self.last_action_time = None
 
-        # Never start in an energised state, regardless of prior run.
-        self.relay_up.off()
-        self.relay_down.off()
+        # Setting physical buttons callbacks
+        self.button_up.when_pressed = self._button_up
+        self.button_up.when_released = self.stop
+        self.button_down.when_pressed = self._button_down
+        self.button_down.when_released = self.stop
 
     def is_busy(self):
         return self._worker is not None and self._worker.is_alive()
+
+    def _button_up(self):
+        self._start("up")
+
+    def _button_down(self):
+        self._start("down")
 
     def _run(self, direction):
         relay_on, relay_off = (
@@ -88,18 +130,18 @@ class ShutterController:
         )
 
         # Belt-and-braces: make sure the opposite relay is off first.
-        relay_off.off()
+        relay_off.on()
 
         self.status = "opening" if direction == "up" else "closing"
         self.last_action = "open" if direction == "up" else "close"
         self.last_action_time = time.time()
 
-        relay_on.on()
+        relay_on.off()
         logger.info("Shutter %s started (max %.1fs)", self.status, self.travel_seconds)
 
         interrupted = self._stop_event.wait(timeout=self.travel_seconds)
 
-        relay_on.off()
+        relay_on.on()
         self.status = "idle"
         logger.info(
             "Shutter operation %s",
@@ -150,3 +192,5 @@ class ShutterController:
         self.relay_down.off()
         self.relay_up.close()
         self.relay_down.close()
+        self.button_up.close()
+        self.button_down.close()

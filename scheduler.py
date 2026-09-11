@@ -17,7 +17,7 @@ import config
 
 logger = logging.getLogger("scheduler")
 
-CHECK_INTERVAL_SECONDS = 15
+CHECK_INTERVAL_SECONDS = 5
 
 
 class Scheduler:
@@ -54,8 +54,7 @@ class Scheduler:
             logger.info("Scheduled OPEN triggered at %s", current_hhmm)
             self.controller.open()
             self._last_open_date = today
-
-        if current_hhmm == cfg["close_time"] and self._last_close_date != today:
+        elif current_hhmm == cfg["close_time"] and self._last_close_date != today:
             logger.info("Scheduled CLOSE triggered at %s", current_hhmm)
             self.controller.close()
             self._last_close_date = today

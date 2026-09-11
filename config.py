@@ -15,8 +15,10 @@ CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.j
 DEFAULTS = {
     "open_time": "08:00",
     "close_time": "20:00",
-    "up_pin": 2,
-    "down_pin": 4,
+    "up_pin": 17,
+    "down_pin": 18,
+    "button_up_pin": 22,
+    "button_down_pin": 23,
     "travel_seconds": 15,
 }
 

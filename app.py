@@ -31,6 +31,8 @@ _cfg = config.load()
 controller = ShutterController(
     up_pin=_cfg["up_pin"],
     down_pin=_cfg["down_pin"],
+    button_up_pin=_cfg["button_up_pin"],
+    button_down_pin=_cfg["button_down_pin"],
     travel_seconds=_cfg["travel_seconds"],
 )
 scheduler = Scheduler(controller)
@@ -112,7 +114,7 @@ if __name__ == "__main__":
         # debug=False on purpose: Flask's debug reloader spawns a second
         # process, which would start a second scheduler thread and risk
         # double-triggering the relays.
-        app.run(host="0.0.0.0", port=5000, debug=False)
+        app.run(host="0.0.0.0", port=80, debug=False)
     finally:
         scheduler.stop()
         controller.cleanup()
