@@ -26,12 +26,18 @@ hold/leave the switch over when operating it manually.
 set `travel_seconds` in `config.json` a couple of seconds longer than
 the slowest direction, so it always finishes the travel.
 
+Buttons will trigger an `opening` / `closing` action when pressed, then
+trigger a `stop` action on release.
+This allows for more precise control and simplicity.     <sub> - works like a button basically -<sub>
+
 ## Wiring
 
-| Relay      | Raspberry Pi GPIO (default) | Replaces              |
-|------------|-----------------------------|-----------------------|
-| UP relay   | GPIO 2 (5V pin)             | "up" switch contact   |
-| DOWN relay | GPIO 4 (5V pin)             | "down" switch contact |
+| Relay       | Raspberry Pi GPIO (default) | Replaces               |
+|-------------|-----------------------------|------------------------|
+| UP relay    | GPIO 17  (5V pin)           | "up" switch contact    |
+| DOWN relay  | GPIO 18  (5V pin)           | "down" switch contact  |
+| UP button   | GPIO 22 (3.3V pin)          | "up" trigger opening   |
+| DOWN button | GPIO 23  (5.3V pin)         | "down" trigger closing |
 
 Change `up_pin` / `down_pin` in `config.json` if you wire them to different
 GPIOs. I personnally used solid state relay modules rated for my house's and
