@@ -1,0 +1,13 @@
+[Unit]
+Description=Shutter Control Web App
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/automated-shutter
+ExecStart=/usr/bin/python3 /home/pi/automated-shutter/app.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
