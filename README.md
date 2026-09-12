@@ -4,7 +4,9 @@ A bare-bones Flask web app for a Raspberry Pi that opens/closes an electric
 roller shutter through two relays, on a schedule you set from a web page on
 your local network.
 
-![description](pictures/UI.png)
+<div align="center">
+  <img src="pictures/UI.png">
+</div>
 
 ## How it matches your wiring
 
@@ -30,9 +32,10 @@ the slowest direction, so it always finishes the travel.
 
 Buttons will trigger an `opening` / `closing` action when pressed, then
 trigger a `stop` action on release.
-This allows for more precise control and simplicity.     <sub> - works like a button basically -<sub>
+This allows for more precise control and simplicity.
 
-![description](pictures/prototype.jpg)
+<div align="center"><img src="pictures/prototype.jpg" width="50%"></div>
+
 
 ## Wiring
 
