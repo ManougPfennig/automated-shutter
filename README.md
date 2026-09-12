@@ -44,11 +44,11 @@ This allows for more precise control and simplicity.
 | UP relay    | GPIO 17  (5V pin)           | "up" switch contact    |
 | DOWN relay  | GPIO 18  (5V pin)           | "down" switch contact  |
 | UP button   | GPIO 22 (3.3V pin)          | "up" trigger opening   |
-| DOWN button | GPIO 23  (5.3V pin)         | "down" trigger closing |
+| DOWN button | GPIO 23  (3.3V pin)         | "down" trigger closing |
 
 Change `up_pin` / `down_pin` in `config.json` if you wire them to different
 GPIOs. I personnally used solid state relay modules rated for my house's and
-motor's voltage/current (theses can pass up to 260V AC and 25A).
+motor's voltage/current (theses can pass up to 250VAC and 10A).
 Since they could be triggered by a current as low as 3V, i had no issues
 when using the raspberry pi's GPIO pins (3.3V to 5V).
 
